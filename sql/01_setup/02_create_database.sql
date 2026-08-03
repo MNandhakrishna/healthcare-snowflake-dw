@@ -1,2 +1,4 @@
 CREATE DATABASE HEALTHCARE_DW
 COMMENT = 'Healthcare Enterprise Data Warehouse';
+
+USE DATABASE HEALTHCARE_DW;
