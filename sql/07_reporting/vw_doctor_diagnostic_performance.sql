@@ -1,0 +1,48 @@
+-- ============================================================
+-- File       : vw_doctor_diagnostic_performance.sql
+-- Purpose    : Doctor Diagnostic Performance Analytics
+-- Layer      : REPORTING
+-- ============================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE HEALTHCARE_WH;
+USE DATABASE HEALTHCARE_DW;
+USE SCHEMA ANALYTICS;
+
+CREATE OR REPLACE VIEW VW_DOCTOR_DIAGNOSTIC_PERFORMANCE AS
+SELECT
+    D.DOCTOR_ID,
+    D.DOCTOR_NAME,
+    D.SPECIALIZATION,
+
+    T.TEST_ID,
+    T.TEST_NAME,
+    T.TEST_CATEGORY,
+
+    COUNT(*) AS TOTAL_TESTS,
+
+    COUNT_IF(F.RESULT_STATUS = 'NORMAL') AS NORMAL_RESULTS,
+
+    COUNT_IF(F.RESULT_STATUS = 'ABNORMAL') AS ABNORMAL_RESULTS,
+
+    ROUND(
+        100.0 * COUNT_IF(F.RESULT_STATUS = 'ABNORMAL')
+        / NULLIF(COUNT(*), 0),
+        2
+    ) AS ABNORMAL_RATE_PERCENT
+
+FROM FACT_DIAGNOSTIC F
+
+INNER JOIN DIM_DOCTOR D
+    ON F.DOCTOR_KEY = D.DOCTOR_KEY
+
+INNER JOIN DIM_DIAGNOSTIC_TEST T
+    ON F.TEST_KEY = T.TEST_KEY
+
+GROUP BY
+    D.DOCTOR_ID,
+    D.DOCTOR_NAME,
+    D.SPECIALIZATION,
+    T.TEST_ID,
+    T.TEST_NAME,
+    T.TEST_CATEGORY;
