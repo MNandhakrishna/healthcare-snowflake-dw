@@ -1,0 +1,104 @@
+-- ============================================================
+-- File       : admission.sql
+-- Purpose    : Create and Load Curated Admission Table
+-- Layer      : CURATED
+-- ============================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE HEALTHCARE_WH;
+USE DATABASE HEALTHCARE_DW;
+USE SCHEMA CURATED;
+
+CREATE OR REPLACE TABLE CUR_ADMISSION (
+
+    ADMISSION_ID NUMBER,
+
+    ADMISSION_DATE DATE,
+
+    DISCHARGE_DATE DATE,
+
+    ADMISSION_TYPE VARCHAR(50),
+
+    ADMISSION_STATUS VARCHAR(30),
+
+    PATIENT_ID NUMBER,
+
+    DEPARTMENT_ID NUMBER,
+
+    WARD_ID NUMBER,
+
+    BED_ID NUMBER,
+
+    DISEASE_ID NUMBER,
+
+    LOAD_TIMESTAMP TIMESTAMP_NTZ
+
+);
+
+INSERT INTO CUR_ADMISSION (
+
+    ADMISSION_ID,
+
+    ADMISSION_DATE,
+
+    DISCHARGE_DATE,
+
+    ADMISSION_TYPE,
+
+    ADMISSION_STATUS,
+
+    PATIENT_ID,
+
+    DEPARTMENT_ID,
+
+    WARD_ID,
+
+    BED_ID,
+
+    DISEASE_ID,
+
+    LOAD_TIMESTAMP
+
+)
+
+SELECT
+
+    ADMISSION_ID,
+
+    TRY_TO_DATE(ADMISSION_DATE),
+
+    TRY_TO_DATE(DISCHARGE_DATE),
+
+    INITCAP(TRIM(ADMISSION_TYPE)),
+
+    UPPER(TRIM(ADMISSION_STATUS)),
+
+    PATIENT_ID,
+
+    DEPARTMENT_ID,
+
+    WARD_ID,
+
+    BED_ID,
+
+    DISEASE_ID,
+
+    CURRENT_TIMESTAMP()
+
+FROM RAW.RAW_ADMISSION
+
+WHERE ADMISSION_ID IS NOT NULL;
+
+
+-- to verify the data load, you can run the following queries to check the number of records in the raw and curated admission tables:
+SELECT COUNT(*) FROM RAW.RAW_ADMISSION;
+
+SELECT COUNT(*) FROM CURATED.CUR_ADMISSION;
+
+SELECT
+    ADMISSION_DATE,
+    DISCHARGE_DATE,
+    ADMISSION_TYPE,
+    ADMISSION_STATUS
+FROM CURATED.CUR_ADMISSION
+LIMIT 10;
