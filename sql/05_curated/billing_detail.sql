@@ -1,0 +1,45 @@
+-- ============================================================
+-- File       : billing_detail.sql
+-- Purpose    : Create and Load Curated Billing Detail Table
+-- Layer      : CURATED
+-- ============================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE HEALTHCARE_WH;
+USE DATABASE HEALTHCARE_DW;
+USE SCHEMA CURATED;
+
+CREATE OR REPLACE TABLE CUR_BILLING_DETAIL (
+    BILLING_DETAIL_ID NUMBER,
+    CHARGE_TYPE VARCHAR(100),
+    REFERENCE_ID NUMBER,
+    AMOUNT NUMBER(12,2),
+    BILL_ID NUMBER,
+    LOAD_TIMESTAMP TIMESTAMP_NTZ
+);
+
+INSERT INTO CUR_BILLING_DETAIL (
+    BILLING_DETAIL_ID,
+    CHARGE_TYPE,
+    REFERENCE_ID,
+    AMOUNT,
+    BILL_ID,
+    LOAD_TIMESTAMP
+)
+SELECT
+    BILLING_DETAIL_ID,
+
+    TRIM(CHARGE_TYPE) AS CHARGE_TYPE,
+
+    REFERENCE_ID,
+
+    AMOUNT,
+
+    BILL_ID,
+
+    CURRENT_TIMESTAMP() AS LOAD_TIMESTAMP
+
+FROM RAW.RAW_BILLING_DETAIL
+
+WHERE BILLING_DETAIL_ID IS NOT NULL;
+
