@@ -1,0 +1,56 @@
+-- ============================================================
+-- File       : fact_billing_detail.sql
+-- Purpose    : Create Billing Detail Fact Table
+-- Layer      : ANALYTICS
+-- Grain      : One row per billing detail line item
+-- ============================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE HEALTHCARE_WH;
+USE DATABASE HEALTHCARE_DW;
+USE SCHEMA ANALYTICS;
+
+CREATE OR REPLACE TABLE FACT_BILLING_DETAIL (
+    BILLING_DETAIL_KEY NUMBER AUTOINCREMENT,
+    BILLING_DETAIL_ID NUMBER,
+
+    BILLING_KEY NUMBER,
+    BILL_ID NUMBER,
+
+    CHARGE_TYPE VARCHAR(100),
+    REFERENCE_ID NUMBER,
+    AMOUNT NUMBER(12,2),
+
+    LOAD_TIMESTAMP TIMESTAMP_NTZ
+);
+
+INSERT INTO FACT_BILLING_DETAIL (
+    BILLING_DETAIL_ID,
+    BILLING_KEY,
+    BILL_ID,
+    CHARGE_TYPE,
+    REFERENCE_ID,
+    AMOUNT,
+    LOAD_TIMESTAMP
+)
+SELECT
+    BD.BILLING_DETAIL_ID,
+
+    B.BILLING_KEY,
+
+    BD.BILL_ID,
+
+    UPPER(TRIM(BD.CHARGE_TYPE)),
+
+    BD.REFERENCE_ID,
+
+    BD.AMOUNT,
+
+    CURRENT_TIMESTAMP()
+
+FROM CURATED.CUR_BILLING_DETAIL BD
+
+INNER JOIN FACT_BILLING B
+    ON BD.BILL_ID = B.BILL_ID
+
+WHERE BD.BILLING_DETAIL_ID IS NOT NULL;
