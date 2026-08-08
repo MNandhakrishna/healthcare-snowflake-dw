@@ -1,0 +1,29 @@
+-- ============================================================
+-- File       : dim_disease.sql
+-- Purpose    : Create Disease Dimension
+-- Layer      : ANALYTICS
+-- ============================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE HEALTHCARE_WH;
+USE DATABASE HEALTHCARE_DW;
+USE SCHEMA ANALYTICS;
+
+CREATE OR REPLACE TABLE DIM_DISEASE (
+    DISEASE_KEY NUMBER AUTOINCREMENT,
+    DISEASE_ID NUMBER,
+    DISEASE_NAME VARCHAR(100),
+    LOAD_TIMESTAMP TIMESTAMP_NTZ
+);
+
+INSERT INTO DIM_DISEASE (
+    DISEASE_ID,
+    DISEASE_NAME,
+    LOAD_TIMESTAMP
+)
+SELECT
+    DISEASE_ID,
+    TRIM(DISEASE_NAME),
+    CURRENT_TIMESTAMP()
+FROM RAW.RAW_DISEASE
+WHERE DISEASE_ID IS NOT NULL;

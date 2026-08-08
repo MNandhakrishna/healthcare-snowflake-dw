@@ -1,0 +1,32 @@
+-- ============================================================
+-- File       : dim_ward.sql
+-- Purpose    : Create Ward Dimension
+-- Layer      : ANALYTICS
+-- ============================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE HEALTHCARE_WH;
+USE DATABASE HEALTHCARE_DW;
+USE SCHEMA ANALYTICS;
+
+CREATE OR REPLACE TABLE DIM_WARD (
+    WARD_KEY NUMBER AUTOINCREMENT,
+    WARD_ID NUMBER,
+    WARD_NAME VARCHAR(100),
+    DEPARTMENT_ID NUMBER,
+    LOAD_TIMESTAMP TIMESTAMP_NTZ
+);
+
+INSERT INTO DIM_WARD (
+    WARD_ID,
+    WARD_NAME,
+    DEPARTMENT_ID,
+    LOAD_TIMESTAMP
+)
+SELECT
+    WARD_ID,
+    TRIM(WARD_NAME),
+    DEPARTMENT_ID,
+    CURRENT_TIMESTAMP()
+FROM RAW.RAW_WARD
+WHERE WARD_ID IS NOT NULL;
