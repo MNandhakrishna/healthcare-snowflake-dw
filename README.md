@@ -367,15 +367,15 @@ The decision was based on measured query behavior rather than adding clustering 
 healthcare-data-warehouse/
 |
 ├── sql/
-│   ├── 01_raw/
+│   ├── 01_setup/
 │   ├── 02_ingestion/
-│   ├── 03_validation/
+│   ├── 03_raw
 │   ├── 04_curated/
 │   ├── 05_analytics/
 │   ├── 06_facts/
 │   ├── 07_reporting/
-│   ├── 08_security/
-│   └── 09_incremental/
+│   ├── 08_incremental
+│   └── 09_security
 |
 ├── README.md
 └── .gitignore
